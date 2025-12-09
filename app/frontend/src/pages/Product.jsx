@@ -5,24 +5,28 @@ import "./Product.css";
 function Product() {
   const { id } = useParams();            // récupère l'id dans l'URL
   const [product, setProduct] = useState(null);
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
-    fetch(`http://localhost:3001/products`)
-      .then(res => res.json())
-      .then(data => {
-        const p = data.find(item => item.id == id);
-        setProduct(p);
+    fetch(`http://localhost:3001/products/${id}`, { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Produit introuvable");
+        return res.json();
       })
-      .catch(err => console.error("Erreur API :", err));
+      .then((data) => setProduct(data))
+      .catch((err) => setError(err.toString()));
   }, [id]);
+
+  if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;
 
   if (!product) return <p>Chargement...</p>;
 
-  function addToCart() {
+  function handleAddToCart() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart.push(product);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("Produit ajouté !");
+  const newCart = [...cart, product];
+  localStorage.setItem("cart", JSON.stringify(newCart));
+  alert("Produit ajouté au panier !");
 }
 
   return (
@@ -31,10 +35,7 @@ function Product() {
       <p>{product.description}</p>
       <h2>{product.price} €</h2>
 
-      <button onClick={addToCart}>Ajouter au panier</button>
-      <button onClick={() => window.location.href = "/cart"}>
-  🛒 Panier
-</button>
+      <button onClick={handleAddToCart}>Ajouter au panier</button>
     </div>
   );
 }

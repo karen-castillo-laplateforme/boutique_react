@@ -347,9 +347,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 -------------------------
 
-📄 Tout remplacer dans src/App.jsx
+📄 Tout remplacer dans src/Home.jsx
 
-Chemin : frontend/src/App.jsx
+Chemin : frontend/src/Home.jsx
 
 Par le code ci-dessous :
 -------------------------
@@ -737,7 +737,7 @@ import Cart from "./pages/Cart";
 
 --------------------------------------------
 
-Ajouter ceci à cart pour accéder au panier
+Ajouter ceci à Home.jsx pour accéder au panier
 -------------------------------------------
 
 <button onClick={() => window.location.href = "/cart"}>
@@ -753,11 +753,9 @@ Changer ceci : import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 et ceci :
 
-    <BrowserRouter>
       <Routes>
         ...
       </Routes>
-    </BrowserRouter>
 
 Dans Product.jsx
 -----------------
@@ -1014,50 +1012,8 @@ function Product() {
 }
 
 export default Product;
+
 ------------------------
-
-// frontend/src/pages/Product.jsx
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import "./Product.css";
-
-function Product() {
-  const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch(`http://localhost:3001/products/${id}`, { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Produit introuvable");
-        return res.json();
-      })
-      .then((data) => setProduct(data))
-      .catch((err) => setError(err.toString()));
-  }, [id]);
-
-  if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;
-  if (!product) return <p>Chargement...</p>;
-
-  function handleAddToCart() {
-    const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const newCart = [...currentCart, product]; // immutabilité
-    localStorage.setItem("cart", JSON.stringify(newCart));
-    alert("Produit ajouté au panier");
-  }
-
-  return (
-    <div className="product-card">
-      <h1>{product.name}</h1>
-      <p>{product.description}</p>
-      <h2>{product.price} €</h2>
-
-      <button onClick={handleAddToCart}>Ajouter au panier</button>
-    </div>
-  );
-}
-
-export default Product;
 
 Ajoutons une barre de navigation :
 -----------------------------------
@@ -1065,16 +1021,20 @@ Ajoutons une barre de navigation :
 Dans notre fichier App.jsx, ajoutons la barre de navigation :
 ---------------------------------------------------------------
 
-import Navbar from "./components/NavBar";
+import NavBar from "./components/NavBar";
 
 et de suite aprés la parenthèse ouvrante du return ceci
 
     <>
       <NavBar />
 
+      et aprés </BrowserRouter>
+      ajouter ceci
+    </>
+
 -----------------
 
-⚠️ Important : Navbar est au-dessus des <Routes>, comme ça elle reste affichée sur toutes les pages.
+⚠️ Important : NavBar est au-dessus des <Routes>, comme ça elle reste affichée sur toutes les pages.
 
 Créer la barre de Menu :
 -------------------------
@@ -1155,7 +1115,7 @@ Comme la barre de navigation a déjà un lien “Panier”, on peu retirer ce bo
 Créons une connection utilisateur :
 -------------------------------------
 
-Dans le dossier backend CRéer un un fichier users.json
+Dans le dossier backend Créer un un fichier users.json
 
 Y entrer ceci :
 
@@ -1172,7 +1132,7 @@ Y entrer ceci :
 Pour l’instant : mot de passe en clair.
 Plus tard on le cryptera avec BCRYPT.
 
-On complète server.js (rajouter à la suite dans la bonne partie de votrr server.js ces codes)
+On complète server.js (rajouter à la suite dans la bonne partie de votre server.js ces codes)
 ----------------------------------------------------------------------------------------------
 
 // Chemin vers le fichier JSON des utilisateurs
@@ -1424,7 +1384,7 @@ $2b$10$Lm0Yy6yDv5FyK...
 
 ---------------------------------
 
-On remplace login.jsx entièrement pour ajouter bcrypt
+On remplace app.post dans server.js entièrement pour ajouter bcrypt
 ------------------------------------------------------
 
 app.post('/login', async (req, res) => {
@@ -1456,7 +1416,7 @@ app.post('/login', async (req, res) => {
 
 -----------------------------------------------
 
-Objectif suivant. (sachant qu'actuelement le panier reste actif aprés déconnexion)
+Objectif suivant. (sachant qu'actuellement le panier reste actif aprés déconnexion)
 ----------------------------------------------------------------------------------
 
 déplacer le panier côté backend.
@@ -1581,6 +1541,7 @@ localStorage.setItem("cart", JSON.stringify(cartData.cart));
 -----------------------
 
 Dans NavBar.jsx remplace tout par
+-----------------------------------
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -1635,6 +1596,7 @@ export default NavBar;
 --------------------------------
 
 Dans Cart.jsx remplace completement :
+---------------------------------------
 useEffect(() => {...});
 
 par ceci :
@@ -1684,6 +1646,7 @@ le problème que l’on corrige maintenant
 Pour que le panier revienne automatiquement après connexion, il faut modifier Cart.jsx et ajouter un écouteur qui recharge le panier quand localStorage.
 
 cart.jsx complet ci-dessous:
+--------------------------------
 
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -1735,8 +1698,10 @@ export default Cart;
 
 ----------------------------
 et modififier également Product.jsx
+------------------------------------
 
 VERSION CORRECTE DE Product.jsx (à remplacer ENTIEREMENT)
+-----------------------------------------------------------
 // frontend/src/pages/Product.jsx
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";

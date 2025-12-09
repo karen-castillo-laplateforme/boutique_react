@@ -6,9 +6,22 @@ function Cart() {
 
   // Charger le panier au chargement
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(stored);
-  }, []);
+    // Fonction pour recharger le panier
+    const updateCart = () => {
+        const stored = JSON.parse(localStorage.getItem("cart")) || [];
+        setCart(stored);
+    };
+
+    // Charger au démarrage
+    updateCart();
+
+    // Mettre à jour si localStorage change ailleurs (login, ajout panier…)
+    window.addEventListener("storage", updateCart);
+
+    return () => {
+        window.removeEventListener("storage", updateCart);
+    };
+}, []);
 
   // Calcul du total
   const total = cart.reduce((sum, item) => sum + item.price, 0);
