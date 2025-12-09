@@ -1,0 +1,17 @@
+.product-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+
+.product-card button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #4F8;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
