@@ -23,10 +23,22 @@ function Product() {
   if (!product) return <p>Chargement...</p>;
 
   function handleAddToCart() {
+
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const newCart = [...cart, product];
   localStorage.setItem("cart", JSON.stringify(newCart));
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    fetch(`http://localhost:3001/cart/${user.id}`, {  
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({cart: newCart}), 
+    });
+  }
+
   alert("Produit ajouté au panier !");
+
 }
 
   return (

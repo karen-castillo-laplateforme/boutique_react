@@ -23,7 +23,7 @@ function Home() {
       {products.map(p => (
         <Link
           key={p.id}
-          href={`/product/${p.id}`}
+          to={`/product/${p.id}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
         <div

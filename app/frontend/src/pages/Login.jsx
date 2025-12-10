@@ -21,10 +21,14 @@ function Login() {
       });
 
       const data = await res.json();
+      console.log("➡️ Réponse brute :", data);
 
       if (!res.ok || !data.ok) {
         throw new Error(data.message || "Erreur de connexion");
       }
+
+      // On stocke l'utilisateur en localStorage
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       const cartRes = await fetch(`http://localhost:3001/cart/${data.user.id}`);
 
