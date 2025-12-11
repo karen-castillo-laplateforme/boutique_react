@@ -3,28 +3,47 @@ import "./Cart.css";
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Charger le panier au chargement
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
-    // Fonction pour recharger le panier
-    const updateCart = () => {
-        const stored = JSON.parse(localStorage.getItem("cart")) || [];
-        setCart(stored);
-    };
-
-    // Charger au démarrage
-    updateCart();
-
-    // Mettre à jour si localStorage change ailleurs (login, ajout panier…)
-    window.addEventListener("storage", updateCart);
-
-    return () => {
-        window.removeEventListener("storage", updateCart);
-    };
-}, []);
+    // On lit simplement le LocalStorage
+    const stored = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(stored);
+    
+    if (user) {
+    fetch(`http://localhost:3001/cart/${user.id}`, { cache: "no-store" })
+    .then((res) => {
+        if (!res.ok) throw new Error("Produit introuvable");
+        return res.json();
+      })
+      .then((data) => setCart(data.cart || []))
+      .catch((err) => setError(err.toString()));
+  }
+  }, []);
 
   // Calcul du total
   const total = cart.reduce((sum, item) => sum + item.price, 0);
+  
+//   Fonction pour vider le panier (Local + Serveur)
+  function handleClearCart() {
+    // A. Vider le local
+    localStorage.removeItem("cart");
+    setCart([]);
+
+    // B. Vider le serveur (si connecté)
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      fetch(`http://localhost:3001/cart/${user.id}`, {
+        method: "POST", // On utilise POST pour écraser le panier
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: [] }), // On envoie un tableau vide !
+      }).catch(err => console.error("Erreur vidage panier server", err));
+    }
+  }
+
+  if (error) return <p style={{ color: "red" }}>Erreur : {error}</p>;
 
   return (
     <div className="cart-container">
@@ -45,10 +64,7 @@ function Cart() {
 
           <button
             className="clear-btn"
-            onClick={() => {
-              localStorage.removeItem("cart");
-              setCart([]);
-            }}
+            onClick={handleClearCart}
           >
             Vider le panier
           </button>
