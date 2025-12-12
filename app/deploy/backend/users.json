@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "email": "demo@boutique.test",
+    "password": "$2b$10$IB.PArfrB8LukHcCoU8UyeNVqFBrvZjP39uVOVtLdcvPAgnAFSCgS",
+    "name": "Visiteur",
+    "cart": [
+      {
+        "id": 1,
+        "name": "Sneakers Alpha",
+        "price": 59.99
+      }
+    ]
+  }
+]
